@@ -20,6 +20,7 @@ signal ui_scale_changed
 signal canvas_color_changed(color)
 signal grid_size_changed(size)
 signal grid_pattern_changed(pattern)
+signal autosave_enabled_changed(enabled)
 
 # -------------------------------------------------------------------------------------------------
 onready var _tab_container: TabContainer = $MarginContainer/TabContainer
@@ -43,6 +44,7 @@ onready var _ui_scale_options: OptionButton = $MarginContainer/TabContainer/Appe
 onready var _ui_scale: SpinBox = $MarginContainer/TabContainer/Appearance/VBoxContainer/UIScale/HBoxContainer/UIScale
 onready var _grid_size: SpinBox = $MarginContainer/TabContainer/Appearance/VBoxContainer/GridSize/GridSize
 onready var _grid_pattern: OptionButton = $MarginContainer/TabContainer/Appearance/VBoxContainer/GridPattern/GridPattern
+onready var _autosave_enabled: CheckButton = $MarginContainer/TabContainer/General/VBoxContainer/AutosaveEnabled/CheckButton
 
 # -------------------------------------------------------------------------------------------------
 func _ready():
@@ -72,6 +74,7 @@ func _set_values() -> void:
 	var ui_scale = Settings.get_value(Settings.APPEARANCE_UI_SCALE, Config.DEFAULT_UI_SCALE)
 	var grid_pattern = Settings.get_value(Settings.APPEARANCE_GRID_PATTERN, Config.DEFAULT_GRID_PATTERN)
 	var grid_size = Settings.get_value(Settings.APPEARANCE_GRID_SIZE, Config.DEFAULT_GRID_SIZE)
+	var autosave_enabled = Settings.get_value(Settings.AUTOSAVE_ENABLED, Config.DEFAULT_AUTOSAVE_ENABLED)
 	
 	match theme:
 		Types.UITheme.DARK: _theme.selected = THEME_DARK_INDEX
@@ -102,6 +105,7 @@ func _set_values() -> void:
 	_foreground_fps.value = foreground_fps
 	_background_fps.value = background_fps
 	_ui_scale.value = ui_scale
+	_autosave_enabled.pressed = autosave_enabled
 
 # -------------------------------------------------------------------------------------------------
 func _set_rounding():
@@ -250,3 +254,8 @@ func _on_UIScale_value_changed(value: float):
 		Settings.set_value(Settings.APPEARANCE_UI_SCALE, value)
 		emit_signal("ui_scale_changed")
 		popup_centered()
+
+# -------------------------------------------------------------------------------------------------
+func _on_CheckButton_toggled(button_pressed: bool):
+	Settings.set_value(Settings.AUTOSAVE_ENABLED, button_pressed)
+	emit_signal("autosave_enabled_changed", button_pressed)
