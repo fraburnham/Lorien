@@ -7,6 +7,7 @@ onready var _statusbar: Statusbar = $Statusbar
 onready var _menubar: Menubar = $Topbar/Menubar
 onready var _toolbar: Toolbar = $Topbar/Toolbar
 onready var _file_dialog: FileDialog = $FileDialog
+onready var _restore_autosave_dialog: ConfirmationDialog = $RestoreAutosaveDialog
 onready var _export_dialog : FileDialog = $ExportDialog
 onready var _about_dialog: WindowDialog = $AboutDialog
 onready var _settings_dialog: WindowDialog = $SettingsDialog
@@ -377,9 +378,20 @@ func _on_open_project(filepath: String) -> bool:
 	# Create and open it
 	project = ProjectManager.add_project(filepath)
 	_make_project_active(project)
+
+	# Check for autosave data and ask the user if they want to load it
+	file = File.new()
+	if file.file_exists(project.get_autosave_filepath()):
+		_restore_autosave_dialog.connect("confirmed", self, "_on_confirm_restore_autosave", [project])
+		_restore_autosave_dialog.popup_centered()
 	
 	return true
-	
+
+# -------------------------------------------------------------------------------------------------
+func _on_confirm_restore_autosave(project: Project) -> void:
+	ProjectManager.load_project_autosave(project)
+	_canvas.use_project(project)
+
 # -------------------------------------------------------------------------------------------------
 func _on_save_project_as() -> void:
 	var active_project: Project = ProjectManager.get_active_project()
