@@ -86,6 +86,12 @@ func _ready():
 	# Apply state from previous session
 	_apply_state()
 
+	var autosave_timer := Timer.new()
+	autosave_timer.autostart = true
+	autosave_timer.wait_time = 15
+	autosave_timer.connect("timeout", self, "_autosave_project")
+	self.add_child(autosave_timer)
+
 # -------------------------------------------------------------------------------------------------
 func _notification(what):
 	if NOTIFICATION_WM_QUIT_REQUEST == what:
@@ -268,6 +274,10 @@ func _save_project(project: Project) -> void:
 	project.meta_data = meta_data
 	ProjectManager.save_project(project)
 	_menubar.update_tab_title(project)
+
+# -------------------------------------------------------------------------------------------------
+func _autosave_project() -> void:
+	ProjectManager.autosave_active_project()
 
 # -------------------------------------------------------------------------------------------------
 func _on_create_new_project() -> void:
