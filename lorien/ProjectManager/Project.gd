@@ -44,5 +44,9 @@ func get_filename() -> String:
 	return filepath.get_file()
 
 # -------------------------------------------------------------------------------------------------
+func get_autosave_filepath() -> String:
+	return "%s.autosave" % filepath
+
+# -------------------------------------------------------------------------------------------------
 func _to_string() -> String:
 	return "%s: id: %d, loaded: %s, dirty: %s" % [filepath, id, loaded, dirty]
