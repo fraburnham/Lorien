@@ -23,6 +23,7 @@ onready var _edit_palette_dialog: EditPaletteDialog = $EditPaletteDialog
 
 var _ui_visible := true 
 var _player_enabled := false
+var _autosave_timer := Timer.new()
 
 # -------------------------------------------------------------------------------------------------
 func _ready():
@@ -72,7 +73,12 @@ func _ready():
 	_settings_dialog.connect("grid_size_changed", self, "_on_grid_size_changed")
 	_settings_dialog.connect("grid_pattern_changed", self, "_on_grid_pattern_changed")
 	_settings_dialog.connect("canvas_color_changed", self, "_on_canvas_color_changed")
-	
+	_settings_dialog.connect("autosave_enabled_changed", self, "_on_autosave_enabled_changed")
+
+	self.add_child(_autosave_timer)
+	_autosave_timer.connect("timeout", self, "_autosave_project")
+	_on_autosave_enabled_changed(Settings.get_value(Settings.AUTOSAVE_ENABLED, Config.DEFAULT_AUTOSAVE_ENABLED))
+
 	# Initialize scale
 	_on_scale_changed()
 	
@@ -86,12 +92,6 @@ func _ready():
 	
 	# Apply state from previous session
 	_apply_state()
-
-	var autosave_timer := Timer.new()
-	autosave_timer.autostart = true
-	autosave_timer.wait_time = 15
-	autosave_timer.connect("timeout", self, "_autosave_project")
-	self.add_child(autosave_timer)
 
 # -------------------------------------------------------------------------------------------------
 func _notification(what):
@@ -349,6 +349,13 @@ func _on_grid_pattern_changed(pattern: int) -> void:
 func _on_canvas_color_changed(color: Color) -> void:
 	_canvas.set_background_color(color)
 	_canvas_grid.set_canvas_color(color)
+
+# -------------------------------------------------------------------------------------------------
+func _on_autosave_enabled_changed(enabled: bool) -> void:
+	if enabled:
+		_autosave_timer.start(15)
+	else:
+		_autosave_timer.stop()
 
 # -------------------------------------------------------------------------------------------------
 func _on_clear_canvas() -> void:
