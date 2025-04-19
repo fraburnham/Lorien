@@ -74,6 +74,7 @@ func _ready():
 	_settings_dialog.connect("grid_pattern_changed", self, "_on_grid_pattern_changed")
 	_settings_dialog.connect("canvas_color_changed", self, "_on_canvas_color_changed")
 	_settings_dialog.connect("autosave_enabled_changed", self, "_on_autosave_enabled_changed")
+	_settings_dialog.connect("autosave_period_changed", self, "_on_autosave_period_changed")
 
 	self.add_child(_autosave_timer)
 	_autosave_timer.connect("timeout", self, "_autosave_project")
@@ -353,9 +354,13 @@ func _on_canvas_color_changed(color: Color) -> void:
 # -------------------------------------------------------------------------------------------------
 func _on_autosave_enabled_changed(enabled: bool) -> void:
 	if enabled:
-		_autosave_timer.start(15)
+		_autosave_timer.start(Settings.get_value(Settings.AUTOSAVE_PERIOD, Config.DEFAULT_AUTOSAVE_PERIOD))
 	else:
 		_autosave_timer.stop()
+
+# -------------------------------------------------------------------------------------------------
+func _on_autosave_period_changed(period: float) -> void:
+	_autosave_timer.wait_time = period
 
 # -------------------------------------------------------------------------------------------------
 func _on_clear_canvas() -> void:

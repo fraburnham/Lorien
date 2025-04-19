@@ -21,6 +21,7 @@ signal canvas_color_changed(color)
 signal grid_size_changed(size)
 signal grid_pattern_changed(pattern)
 signal autosave_enabled_changed(enabled)
+signal autosave_period_changed(period)
 
 # -------------------------------------------------------------------------------------------------
 onready var _tab_container: TabContainer = $MarginContainer/TabContainer
@@ -45,6 +46,7 @@ onready var _ui_scale: SpinBox = $MarginContainer/TabContainer/Appearance/VBoxCo
 onready var _grid_size: SpinBox = $MarginContainer/TabContainer/Appearance/VBoxContainer/GridSize/GridSize
 onready var _grid_pattern: OptionButton = $MarginContainer/TabContainer/Appearance/VBoxContainer/GridPattern/GridPattern
 onready var _autosave_enabled: CheckButton = $MarginContainer/TabContainer/General/VBoxContainer/AutosaveEnabled/CheckButton
+onready var _autosave_period: SpinBox = $MarginContainer/TabContainer/General/VBoxContainer/AutosavePeriod/AutosavePeriod
 
 # -------------------------------------------------------------------------------------------------
 func _ready():
@@ -75,6 +77,7 @@ func _set_values() -> void:
 	var grid_pattern = Settings.get_value(Settings.APPEARANCE_GRID_PATTERN, Config.DEFAULT_GRID_PATTERN)
 	var grid_size = Settings.get_value(Settings.APPEARANCE_GRID_SIZE, Config.DEFAULT_GRID_SIZE)
 	var autosave_enabled = Settings.get_value(Settings.AUTOSAVE_ENABLED, Config.DEFAULT_AUTOSAVE_ENABLED)
+	var autosave_period = Settings.get_value(Settings.AUTOSAVE_PERIOD, Config.DEFAULT_AUTOSAVE_PERIOD)
 	
 	match theme:
 		Types.UITheme.DARK: _theme.selected = THEME_DARK_INDEX
@@ -106,6 +109,7 @@ func _set_values() -> void:
 	_background_fps.value = background_fps
 	_ui_scale.value = ui_scale
 	_autosave_enabled.pressed = autosave_enabled
+	_autosave_period.value = autosave_period
 
 # -------------------------------------------------------------------------------------------------
 func _set_rounding():
@@ -259,3 +263,9 @@ func _on_UIScale_value_changed(value: float):
 func _on_CheckButton_toggled(button_pressed: bool):
 	Settings.set_value(Settings.AUTOSAVE_ENABLED, button_pressed)
 	emit_signal("autosave_enabled_changed", button_pressed)
+
+# -------------------------------------------------------------------------------------------------
+func _on_AutosavePeriod_value_changed(period: float):
+	if Input.is_action_just_pressed("ui_accept") || _ui_scale.is_ready():
+		Settings.set_value(Settings.AUTOSAVE_PERIOD, period)
+		emit_signal("autosave_period_changed", period)

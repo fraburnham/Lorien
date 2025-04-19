@@ -25,3 +25,4 @@ const DEFAULT_UI_SCALE  			:= 1.0
 const DEFAULT_GRID_PATTERN 			:= Types.GridPattern.DOTS
 const DEFAULT_GRID_SIZE 			:= 25.0
 const DEFAULT_AUTOSAVE_ENABLED		:= false
+const DEFAULT_AUTOSAVE_PERIOD		:= 30
