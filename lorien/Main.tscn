@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://Main.gd" type="Script" id=1]
 [ext_resource path="res://InfiniteCanvas/InfiniteCanvas.tscn" type="PackedScene" id=2]
@@ -15,6 +15,7 @@
 [ext_resource path="res://UI/ColorPalettePicker.tscn" type="PackedScene" id=13]
 [ext_resource path="res://UI/Dialogs/EditPaletteDialog.tscn" type="PackedScene" id=14]
 [ext_resource path="res://UI/Dialogs/DeletePaletteDialog.tscn" type="PackedScene" id=15]
+[ext_resource path="res://UI/Dialogs/RestoreAutosaveDialog.tscn" type="PackedScene" id=16]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.207843, 0.211765, 0.227451, 1 )
@@ -168,6 +169,13 @@ margin_left = -150.0
 margin_top = -50.0
 margin_right = 150.0
 margin_bottom = 50.0
+
+[node name="RestoreAutosaveDialog" parent="." instance=ExtResource( 16 )]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
 
 [node name="EditPaletteDialog" parent="." instance=ExtResource( 14 )]
 anchor_left = 0.5

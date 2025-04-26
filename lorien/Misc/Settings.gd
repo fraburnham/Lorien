@@ -18,6 +18,8 @@ const RENDERING_FOREGROUND_FPS			:= "rendering_foreground_fps"
 const RENDERING_BACKGROUND_FPS			:= "rendering_background_fps"
 const RENDERING_BRUSH_ROUNDING			:= "rendering_brush_rounding"
 const COLOR_PALETTE_UUID_LAST_USED		:= "color_palette_uuid_last_used"
+const AUTOSAVE_ENABLED					:= "autosave_enabled"
+const AUTOSAVE_PERIOD					:= "autosave_period"
 
 # -------------------------------------------------------------------------------------------------
 var _config_file := ConfigFile.new()

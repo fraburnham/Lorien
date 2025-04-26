@@ -7,6 +7,7 @@ onready var _statusbar: Statusbar = $Statusbar
 onready var _menubar: Menubar = $Topbar/Menubar
 onready var _toolbar: Toolbar = $Topbar/Toolbar
 onready var _file_dialog: FileDialog = $FileDialog
+onready var _restore_autosave_dialog: ConfirmationDialog = $RestoreAutosaveDialog
 onready var _export_dialog : FileDialog = $ExportDialog
 onready var _about_dialog: WindowDialog = $AboutDialog
 onready var _settings_dialog: WindowDialog = $SettingsDialog
@@ -22,6 +23,7 @@ onready var _edit_palette_dialog: EditPaletteDialog = $EditPaletteDialog
 
 var _ui_visible := true 
 var _player_enabled := false
+var _autosave_timer := Timer.new()
 
 # -------------------------------------------------------------------------------------------------
 func _ready():
@@ -71,7 +73,13 @@ func _ready():
 	_settings_dialog.connect("grid_size_changed", self, "_on_grid_size_changed")
 	_settings_dialog.connect("grid_pattern_changed", self, "_on_grid_pattern_changed")
 	_settings_dialog.connect("canvas_color_changed", self, "_on_canvas_color_changed")
-	
+	_settings_dialog.connect("autosave_enabled_changed", self, "_on_autosave_enabled_changed")
+	_settings_dialog.connect("autosave_period_changed", self, "_on_autosave_period_changed")
+
+	self.add_child(_autosave_timer)
+	_autosave_timer.connect("timeout", self, "_autosave_project")
+	_on_autosave_enabled_changed(Settings.get_value(Settings.AUTOSAVE_ENABLED, Config.DEFAULT_AUTOSAVE_ENABLED))
+
 	# Initialize scale
 	_on_scale_changed()
 	
@@ -270,6 +278,10 @@ func _save_project(project: Project) -> void:
 	_menubar.update_tab_title(project)
 
 # -------------------------------------------------------------------------------------------------
+func _autosave_project() -> void:
+	ProjectManager.autosave_active_project()
+
+# -------------------------------------------------------------------------------------------------
 func _on_create_new_project() -> void:
 	_create_active_default_project()
 
@@ -340,6 +352,17 @@ func _on_canvas_color_changed(color: Color) -> void:
 	_canvas_grid.set_canvas_color(color)
 
 # -------------------------------------------------------------------------------------------------
+func _on_autosave_enabled_changed(enabled: bool) -> void:
+	if enabled:
+		_autosave_timer.start(Settings.get_value(Settings.AUTOSAVE_PERIOD, Config.DEFAULT_AUTOSAVE_PERIOD))
+	else:
+		_autosave_timer.stop()
+
+# -------------------------------------------------------------------------------------------------
+func _on_autosave_period_changed(period: float) -> void:
+	_autosave_timer.wait_time = period
+
+# -------------------------------------------------------------------------------------------------
 func _on_clear_canvas() -> void:
 	_canvas.clear() 
 
@@ -367,9 +390,20 @@ func _on_open_project(filepath: String) -> bool:
 	# Create and open it
 	project = ProjectManager.add_project(filepath)
 	_make_project_active(project)
+
+	# Check for autosave data and ask the user if they want to load it
+	file = File.new()
+	if file.file_exists(project.get_autosave_filepath()):
+		_restore_autosave_dialog.connect("confirmed", self, "_on_confirm_restore_autosave", [project])
+		_restore_autosave_dialog.popup_centered()
 	
 	return true
-	
+
+# -------------------------------------------------------------------------------------------------
+func _on_confirm_restore_autosave(project: Project) -> void:
+	ProjectManager.load_project_autosave(project)
+	_canvas.use_project(project)
+
 # -------------------------------------------------------------------------------------------------
 func _on_save_project_as() -> void:
 	var active_project: Project = ProjectManager.get_active_project()

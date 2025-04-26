@@ -160,10 +160,51 @@ margin_bottom = 25.0
 size_flags_horizontal = 3
 text = "English"
 
-[node name="HSeparator" type="HSeparator" parent="MarginContainer/TabContainer/General/VBoxContainer"]
+[node name="AutosaveEnabled" type="HBoxContainer" parent="MarginContainer/TabContainer/General/VBoxContainer"]
 margin_top = 148.0
 margin_right = 496.0
-margin_bottom = 160.0
+margin_bottom = 173.0
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="MarginContainer/TabContainer/General/VBoxContainer/AutosaveEnabled"]
+margin_top = 4.0
+margin_right = 246.0
+margin_bottom = 21.0
+size_flags_horizontal = 3
+size_flags_vertical = 6
+text = "SETTINGS_AUTOSAVE_ENABLED"
+
+[node name="CheckButton" type="CheckButton" parent="MarginContainer/TabContainer/General/VBoxContainer/AutosaveEnabled"]
+margin_left = 250.0
+margin_right = 496.0
+margin_bottom = 25.0
+size_flags_horizontal = 3
+
+[node name="AutosavePeriod" type="HBoxContainer" parent="MarginContainer/TabContainer/General/VBoxContainer"]
+margin_top = 177.0
+margin_right = 496.0
+margin_bottom = 198.0
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="MarginContainer/TabContainer/General/VBoxContainer/AutosavePeriod"]
+margin_top = 2.0
+margin_right = 246.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+size_flags_vertical = 6
+text = "SETTINGS_AUTOSAVE_PERIOD"
+
+[node name="AutosavePeriod" type="SpinBox" parent="MarginContainer/TabContainer/General/VBoxContainer/AutosavePeriod"]
+margin_left = 250.0
+margin_right = 496.0
+margin_bottom = 21.0
+size_flags_horizontal = 3
+value = 30.0
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/TabContainer/General/VBoxContainer"]
+margin_top = 202.0
+margin_right = 496.0
+margin_bottom = 214.0
 custom_constants/separation = 12
 custom_styles/separator = SubResource( 3 )
 
@@ -509,6 +550,8 @@ dialog_autowrap = true
 [connection signal="value_changed" from="MarginContainer/TabContainer/General/VBoxContainer/DefaultBrushSize/DefaultBrushSize" to="." method="_on_DefaultBrushSize_value_changed"]
 [connection signal="text_changed" from="MarginContainer/TabContainer/General/VBoxContainer/DefaultSaveDir/DefaultSaveDir" to="." method="_on_DefaultSaveDir_text_changed"]
 [connection signal="item_selected" from="MarginContainer/TabContainer/General/VBoxContainer/Language/OptionButton" to="." method="_on_OptionButton_item_selected"]
+[connection signal="toggled" from="MarginContainer/TabContainer/General/VBoxContainer/AutosaveEnabled/CheckButton" to="." method="_on_CheckButton_toggled"]
+[connection signal="value_changed" from="MarginContainer/TabContainer/General/VBoxContainer/AutosavePeriod/AutosavePeriod" to="." method="_on_AutosavePeriod_value_changed"]
 [connection signal="item_selected" from="MarginContainer/TabContainer/Appearance/VBoxContainer/Theme/Theme" to="." method="_on_Theme_item_selected"]
 [connection signal="item_selected" from="MarginContainer/TabContainer/Appearance/VBoxContainer/UIScale/HBoxContainer/UIScaleOptions" to="." method="_on_UIScaleOptions_item_selected"]
 [connection signal="gui_input" from="MarginContainer/TabContainer/Appearance/VBoxContainer/UIScale/HBoxContainer/UIScale" to="MarginContainer/TabContainer/Appearance/VBoxContainer/UIScale/HBoxContainer/UIScale" method="_on_UIScale_gui_input"]

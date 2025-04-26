@@ -14,16 +14,16 @@ const TYPE_BRUSH_STROKE := 0
 const TYPE_ERASER_STROKE_DEPRECATED := 1 # Deprecated since v0; will be ignored when read; structually the same as normal brush stroke
 
 # -------------------------------------------------------------------------------------------------
-static func save_project(project: Project) -> void:
+static func _save_project_to_file(project: Project, filepath: String) -> void:
 	var start_time := OS.get_ticks_msec()
 	
 	# Open file
 	var file := File.new()
-	var err = file.open_compressed(project.filepath, File.WRITE, COMPRESSION_METHOD)
+	var err = file.open_compressed(filepath, File.WRITE, COMPRESSION_METHOD)
 	if err != OK:
-		print_debug("Failed to open file for writing: %s" % project.filepath)
+		print_debug("Failed to open file for writing: %s" % filepath)
 		return
-	
+
 	# Meta data
 	file.store_32(VERSION_NUMBER)
 	file.store_pascal_string(_dict_to_metadata_str(project.meta_data))
@@ -55,17 +55,32 @@ static func save_project(project: Project) -> void:
 
 	# Done
 	file.close()
-	print("Saved %s in %d ms" % [project.filepath, (OS.get_ticks_msec() - start_time)])
+	print("Saved %s in %d ms" % [filepath, (OS.get_ticks_msec() - start_time)])
 
 # -------------------------------------------------------------------------------------------------
-static func load_project(project: Project) -> void:
+static func save_project(project: Project) -> void:
+	_save_project_to_file(project, project.filepath)
+
+	# Cleanup autosave
+	var file := File.new()
+	if file.file_exists(project.get_autosave_filepath()):
+		print("Deleted autosave %s" % [project.get_autosave_filepath()])
+		OS.move_to_trash(project.get_autosave_filepath())
+
+# -------------------------------------------------------------------------------------------------
+static func autosave_project(project: Project) -> void:
+	if !project.filepath.empty():
+		_save_project_to_file(project, project.get_autosave_filepath())
+
+# -------------------------------------------------------------------------------------------------
+static func _load_project_from_file(project: Project, filepath: String) -> void:
 	var start_time := OS.get_ticks_msec()
 
 	# Open file
 	var file := File.new()
-	var err = file.open_compressed(project.filepath, File.READ, COMPRESSION_METHOD)
+	var err = file.open_compressed(filepath, File.READ, COMPRESSION_METHOD)
 	if err != OK:
-		print_debug("Failed to load file: %s" % project.filepath)
+		print_debug("Failed to load file: %s" % filepath)
 		return
 	
 	# Clear potential previous data
@@ -119,7 +134,15 @@ static func load_project(project: Project) -> void:
 	
 	# Done
 	file.close()
-	print("Loaded %s in %d ms" % [project.filepath, (OS.get_ticks_msec() - start_time)])
+	print("Loaded %s in %d ms" % [filepath, (OS.get_ticks_msec() - start_time)])
+
+# -------------------------------------------------------------------------------------------------
+static func load_project(project: Project) -> void:
+	_load_project_from_file(project, project.filepath)
+
+# -------------------------------------------------------------------------------------------------
+static func load_project_autosave(project: Project) -> void:
+	_load_project_from_file(project, project.get_autosave_filepath())
 
 # -------------------------------------------------------------------------------------------------
 static func _dict_to_metadata_str(d: Dictionary) -> String:

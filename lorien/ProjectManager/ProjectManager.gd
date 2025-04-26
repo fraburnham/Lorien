@@ -64,12 +64,23 @@ func save_all_projects() -> void:
 			save_project(p)
 
 # -------------------------------------------------------------------------------------------------
+func autosave_active_project() -> void:
+	if !_active_project.filepath.empty() && _active_project.loaded && _active_project.dirty:
+			Serializer.autosave_project(_active_project)
+
+# -------------------------------------------------------------------------------------------------
 func _load_project(project: Project) -> void:
 	if !project.loaded:
 		Serializer.load_project(project)
 		project.loaded = true
 	else:
 		print_debug("Trying to load already loaded project")
+
+# -------------------------------------------------------------------------------------------------
+func load_project_autosave(project: Project) -> void:
+	Serializer.load_project_autosave(project)
+	project.loaded = true
+	project.dirty = true
 
 # -------------------------------------------------------------------------------------------------
 func get_open_project_by_filepath(filepath: String) -> Project:
